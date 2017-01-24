@@ -29,10 +29,14 @@ namespace CheckComputer
         {
             ch_Ram.Series["Punkty"].Points.AddXY(x, y);
         }
-
+        public void SetHddChartValue(int x, int y)
+        {
+            cb_hdd.Series["Punkty"].Points.AddXY(x, y);
+        }
         private void ch_Ram_Click(object sender, EventArgs e)
         {
-
+           
         }
+      
     }
 }

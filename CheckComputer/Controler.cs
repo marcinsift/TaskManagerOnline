@@ -44,6 +44,23 @@ namespace CheckComputer
                 view1.SetRamChartValue(j, int.Parse(data));
                 j++;
             }
+            int z = 0;
+            foreach(string data in model.hdd)
+            {
+                int value = 0;
+                string datatemp = data.Replace("\"", "");
+                datatemp = datatemp.Replace(";", "");
+                try
+                {
+                    value = int.Parse(datatemp);
+                }
+                catch
+                {
+
+                }
+                view1.SetHddChartValue(z, value);
+                z++;
+            }
         }
         public void SetDataFromComputer()
         {
