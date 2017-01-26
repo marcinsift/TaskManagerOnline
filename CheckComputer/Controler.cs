@@ -2,13 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CheckComputer
 {
+   
     public class Controler
     {
+        Thread thread;
+        Thread thread1;
+        Thread thread2;
+        Thread thread3;
         Model model = new Model();
+        int z = 0;
+        int j = 0;
+        int i = 0;
         Form1 view;
         ComputerDetails view1;
         List<ComputerInformation> computers;
@@ -32,20 +41,52 @@ namespace CheckComputer
         public void OnLoadDeatail()
         {
             ShowDeatils();
-            int i = 1;
-            foreach (string data in model.cpu)
+            view1.AddToRow();
+            WatkiStart();
+
+
+        }
+        void WatkiStart()
+        {
+            thread = new Thread(() => AddToGrid());
+            thread.Start();
+            thread1 = new Thread(() => AddToChartCPU());
+            thread1.Start();
+            thread2 = new Thread(() => AddToChartRAM());
+            thread2.Start();
+            thread3 = new Thread(() => AddToChartHDD());
+            thread3.Start();
+        }
+        void WatkiStop()
+        {
+            thread.Abort();
+            thread1.Abort();
+            thread2.Abort();
+            thread3.Abort();
+
+        }
+        void AddToGrid()
+        {
+            foreach (string data in model.process)
             {
-                view1.SetCpuChartValue(i,int.Parse(data));
-                i++;
+                string[] tempTab = data.Split(';');
+                int g = 0;
+                foreach (string rekord in tempTab)
+                {
+                    view1.AddDatatoGrid(g, rekord);
+                    g++;
+                }
+                Thread.Sleep(1000);
             }
-            int j = 0;
-            foreach(string data in model.ram)
-            {
-                view1.SetRamChartValue(j, int.Parse(data));
-                j++;
-            }
-            int z = 0;
-            foreach(string data in model.hdd)
+            WatkiStop();
+            ShowDeatils();
+            WatkiStart();
+
+
+        }
+        void AddToChartHDD()
+        {
+            foreach (string data in model.hdd)
             {
                 int value = 0;
                 string datatemp = data.Replace("\"", "");
@@ -60,7 +101,27 @@ namespace CheckComputer
                 }
                 view1.SetHddChartValue(z, value);
                 z++;
+                Thread.Sleep(1000);
             }
+        }
+        void AddToChartRAM()
+        {
+            foreach (string data in model.ram)
+            {
+                view1.SetRamChartValue(j, int.Parse(data));
+                j++;
+                Thread.Sleep(1000);
+            }
+        }
+        void AddToChartCPU()
+        {
+            foreach (string data in model.cpu)
+            {
+                view1.SetCpuChartValue(i, int.Parse(data));
+                i++;
+                Thread.Sleep(1000);
+            }
+               
         }
         public void SetDataFromComputer()
         {
@@ -79,6 +140,18 @@ namespace CheckComputer
             string id = (from rekord in computers where rekord.ComputerName == view.IdCompterCombo select rekord.Id).FirstOrDefault();
             if(!String.IsNullOrEmpty(id)) model.TakeAllDataAbotComputer(id);
 
+        }
+        public void ShowFormDetails()
+        {
+            ComputerDetails details = new ComputerDetails(this);
+            details.FormClosed += Details_FormClosed;
+            view.Enabled = false;
+            details.Show();
+        }
+
+        private void Details_FormClosed(object sender, System.Windows.Forms.FormClosedEventArgs e)
+        {
+            view.Enabled = true;
         }
     }
 

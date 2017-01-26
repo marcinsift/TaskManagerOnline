@@ -48,9 +48,9 @@ namespace CheckComputer
         public string IdCompterCombo { get; set; }
         private void btn_details_Click(object sender, EventArgs e)
         {
-            ComputerDetails details = new ComputerDetails(controler);
-            details.Show();
-           
+            controler.ShowFormDetails();
+
+
         }
     }
 }

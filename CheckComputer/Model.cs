@@ -14,6 +14,7 @@ namespace CheckComputer
         public List<string> cpu = new List<string>();
         public List<string> ram = new List<string>();
         public List<string> hdd = new List<string>();
+        public List<string> process = new List<string>();
 
         public Model()
         {
@@ -46,6 +47,7 @@ namespace CheckComputer
                 cpu.Add(itemProperties.FirstOrDefault(x => x.Name == "cpu").FirstOrDefault().ToString());
                 ram.Add(itemProperties.FirstOrDefault(x => x.Name == "ram_mb_used").FirstOrDefault().ToString());
                 hdd.Add(itemProperties.FirstOrDefault(x => x.Name == "hdd_mb_free").FirstOrDefault().ToString());
+                process.Add(itemProperties.FirstOrDefault(x => x.Name == "processes").FirstOrDefault().ToString());
 
             }
         }
