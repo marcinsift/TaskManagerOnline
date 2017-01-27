@@ -42,7 +42,15 @@ namespace CheckComputer
         
         private void cb_Computer_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            controler.SetDataFromComputer(cb_Computer.SelectedItem.ToString());
+            IdCompterCombo = cb_Computer.SelectedItem.ToString();
+            controler.SetDataFromComputer();
+        }
+        public string IdCompterCombo { get; set; }
+        private void btn_details_Click(object sender, EventArgs e)
+        {
+            controler.ShowFormDetails();
+
+
         }
     }
 }

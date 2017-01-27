@@ -113,6 +113,7 @@
             this.btn_details.TabIndex = 9;
             this.btn_details.Text = "Pokaż szczegóły";
             this.btn_details.UseVisualStyleBackColor = true;
+            this.btn_details.Click += new System.EventHandler(this.btn_details_Click);
             // 
             // Form1
             // 
@@ -128,6 +129,8 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cb_Computer);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(268, 321);
             this.Name = "Form1";
             this.Text = "Parametry komptera";
             this.Load += new System.EventHandler(this.Form1_Load);
