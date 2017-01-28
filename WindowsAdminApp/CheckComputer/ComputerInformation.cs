@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CheckComputer
 {
-    class ComputerInformation
+    public class ComputerInformation
     {
         public string Id { get; set; }
         public string ComputerName { get; set; }

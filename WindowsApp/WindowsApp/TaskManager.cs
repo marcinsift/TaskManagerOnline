@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace WindowsApp
 {
-    class TaskManager
+    public class TaskManager
     {
         private string id;
         private PerformanceCounter cpuCounter;

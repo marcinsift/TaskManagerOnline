@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CheckComputer
 {
-    class Model
+    public class Model
     {
         taskmanager.ComputerService client;
         List<ComputerInformation> computers;

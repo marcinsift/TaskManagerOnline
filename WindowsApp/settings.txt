@@ -1,0 +1,2 @@
+﻿http://taskmanager.zwiazek.net/soap/taskmanager/computer?wsdl
+b389fd19-69ae-4e90-a374-9c857edb23de
