@@ -69,7 +69,7 @@ class SoapController extends AbstractController
     }
 
     /**
-     * Budowanie poprawnego adresu URL
+     * Budowanie poprawnego adresu
      * @param null $wsdl
      * @return string
      */
