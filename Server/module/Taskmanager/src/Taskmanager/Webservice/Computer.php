@@ -20,8 +20,8 @@ class Computer
      * user_name : "Marek" string,
      * cpu : 17 int [%],
      * ram_mb_used : 25 int [%],
-     * hdd_mb_free : 100268 int[],
-     * processes : "chrome" string[],
+     * hdd_mb_free : 100268 int[] (string odzielony znakiem średnika)
+     * processes : "chrome" string[] (string oddzielony znakiem średnika)
      * create: date
      * @param  string $data
      * @return bool
@@ -60,18 +60,23 @@ class Computer
     }
 
     /**
-     * Pobiera informacje o jednym wskazanym komputerze, parametrem jest string json (w przypadku array, c# nie daje sobie rady), informacje zwrotne również zawarte są w json jako string, należy wynik zdekodować.
-     * Przykładowe ID: f44dccef-01ae-4bcb-bb51-5bcb29ed534f
+     * Pobiera informacje o jednym wskazanym komputerze, parametrem jest string json, informacje zwrotne również zawarte są w json jako string, należy wynik zdekodować.
+     * Przykładowe parametr ID: f44dccef-01ae-4bcb-bb51-5bcb29ed534f - jest to wartość ID metody getList()
+     * Metoda zwraca następujące informacje:
+     * - create: date - data utworzenia wpisu
+     * - id: string - id komputera
+     * - computer_name: string - nazwa komputera
+     * - cpu: int - procentowe użycie procesora
+     * - ram_mb_used: int - procentowe użycie pamięci RAM
+     * - hdd_mb_free: int procentowe zużycie przestrzeni dysku twardego
+     * - processes: string - nazwy procesów oddzielone znakiem średnika;
+     * - id_computer: id - id informacji o komputerze.
      *
      * @param string $id
      * @return string
      */
     public function getInformation($id)
     {
-//        if (empty($id)) {
-//            throw new \SoapFault("500", "Brak wymaganych parametrów [id]");
-//        }
-
         try {
             $table = new Model\TaskmanagerTable();
             $select = $table->getSql()->select();
@@ -84,7 +89,6 @@ class Computer
                 'processes',
                 'ram_mb_used',
                 'hdd_mb_free',
-                'processes',
                 'id_computer'
             ]);
             $select->where(['id' => $id]);
@@ -94,17 +98,21 @@ class Computer
 
 
         } catch (\Exception $e) {
-//            echo $e->getMessage();
-//            echo '<br>';
-//            echo $e->getTraceAsString();
-//            die;
             throw new \SoapFault("500", "Błąd odczytu danych");
 
         }
     }
 
     /**
-     * Krotki opis funkcji getList
+     *  Pobiera listę wszystkich komputerów jako string json
+     *  Kolumny do zwrotu:
+     *  - id: sting - Identyfikator komputera
+     *  - computer_name: string -  nazwa komputer
+     *  - cpu_avg: int - średnia wartość zasobów  procesora
+     *  - ram_avg: int - średnia wartość zabieranych zasobów pamieci ram
+     *  - process_avg: int - średnia ilośc procesów uruchomianych
+     *  -  id_computer: int - ilość wierszy danych
+     *
      * @return string
      */
     public function getList()
@@ -122,17 +130,12 @@ class Computer
                     'id_computer' => new Expression('COUNT(id_computer)'),
                 ]);
                 $select->group(['id', 'computer_name']);
-//                echo $select->getSqlString(new \Zend\Db\Adapter\Platform\Mysql());
             });
             $data = $rows->toArray();
             return json_encode($data);
 
 
         } catch (\Exception $e) {
-//            echo $e->getMessage();
-//            echo '<br>';
-//            echo $e->getTraceAsString();
-//            die;
             throw new \SoapFault("500", "Błąd odczytu danych");
         }
 

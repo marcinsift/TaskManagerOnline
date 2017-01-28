@@ -18,6 +18,12 @@ class SoapController extends AbstractController
 
     private $uri;
 
+    /**
+     * Metoda tworzy serwer Webserwisu w oparciu o strategię wywgnerowaną na podstawie modułu Soap dostępnego w Zend Framework
+     * Domyślną strategią dla generowanych obiektów jest ArrayOfTypeSequence
+     *
+     * @return \Zend\Stdlib\ResponseInterface
+     */
     public function indexAction()
     {
         $response = $this->getResponse();
@@ -32,7 +38,6 @@ class SoapController extends AbstractController
                 $strategy = new Strategy();
                 $uri = $this->getUri();
                 $wsdlGenerator = new AutoDiscover($strategy);
-//                $wsdlGenerator->setServiceName($action);
                 $wsdlGenerator->setBindingStyle([
                     'style' => 'document',
                     'transport' => 'http://schemas.xmlsoap.org/soap/http',
@@ -43,25 +48,17 @@ class SoapController extends AbstractController
                 ]);
 
                 $wsdlGenerator->setUri($uri);
-//                $object = new $classWsdl();
                 $wsdlGenerator->setClass($classWsdl);
                 $wsdl = $wsdlGenerator->generate();
                 $response->getHeaders()->addHeaderLine('Content-Type', 'text/xml');
                 $response->setContent($wsdl->toXml());
             } else {
-                $uri = $this->getRequest()->getUri();
                 $soap = new Server($this->getUri(true));
-//                $soap->setSoapVersion(SOAP_1_2);
-//                $soap->setReturnResponse(false);
                 $dlwcsl = new DocumentLiteralWrapper(new $classWsdl());
-//                $dlwcsl = new $classWsdl();
+
                 $soap->setObject($dlwcsl);
                 $soap->setClass($classWsdl);
                 $soapResponse = $soap->handle();
-//                if ($soapResponse instanceof SoapFault) {
-//                    $soapResponse = (string)$soapResponse;
-//                }
-//                $response->getHeaders()->addHeaderLine('Content-Type', 'text/xml');
                 $response->setContent($soapResponse);
             }
         } catch (\Exception $ex) {
@@ -71,6 +68,11 @@ class SoapController extends AbstractController
         return $response;
     }
 
+    /**
+     * Budowanie poprawnego adresu
+     * @param null $wsdl
+     * @return string
+     */
     private function getUri($wsdl = null)
     {
         $request = $this->getRequest()->getUri();
