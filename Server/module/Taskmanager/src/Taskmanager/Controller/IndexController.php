@@ -21,9 +21,9 @@ class IndexController extends AbstractController
     {
 
         $test = new  Computer();
-//        $result = $test->getList();
-        $data = "f44dccef-01ae-4bcb-bb51-5bcb29ed534f";
-        $result = $test->getInformation($data);
+        $result = $test->getList();
+//        $data = "f44dccef-01ae-4bcb-bb51-5bcb29ed534f";
+//        $result = $test->getInformation($data);
         var_dump($result);
 
 

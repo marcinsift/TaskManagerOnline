@@ -29,13 +29,8 @@ class Computer
     public function addInformation($data)
     {
         try {
-
-
             $data = json_decode($data, true);
-
-
             $row = new Model\TaskmanagerRow();
-
             $row->id = $data['id'];
             $row->cpu = $data['cpu'];
             $row->computer_name = $data['computer_name'];
@@ -44,8 +39,6 @@ class Computer
             $row->hdd_mb_free = json_encode($data['hdd_mb_free']);
             $row->processes_count = count(explode(';', $data['processes']));
             $row->processes = json_encode($data['processes']);
-
-
             $row->save();
 
             return true;
