@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace WindowsApp
 {
-    class TaskManager
+    public class TaskManager
     {
         private string id;
         private PerformanceCounter cpuCounter;
@@ -52,18 +52,42 @@ namespace WindowsApp
         private void InitializeCpuCounter()
         {
             cpuCounter = new PerformanceCounter();
-            cpuCounter.CategoryName = "Procesor";
-            cpuCounter.CounterName = "Czas procesora (%)";
-            cpuCounter.InstanceName = "_Total";
-            cpuCounter.NextValue();
+
+            try
+            {
+                cpuCounter.CategoryName = "Processor";
+                cpuCounter.CounterName = "% Processor Time";
+                cpuCounter.InstanceName = "_Total";
+                cpuCounter.NextValue();
+            }
+            catch 
+            {
+                cpuCounter.CategoryName = "Procesor";
+                cpuCounter.CounterName = "Czas procesora (%)";
+                cpuCounter.InstanceName = "_Total";
+                cpuCounter.NextValue();
+            }
+
         }
 
         private void InitializeRamCounter()
         {
+
             ramCounter = new PerformanceCounter();
-            ramCounter.CategoryName = "Pamięć";
-            ramCounter.CounterName = "Dostępna pamięć (MB)";
-            ramCounter.NextValue();
+
+            try
+            {
+                ramCounter.CategoryName = "Memory";
+                ramCounter.CounterName = "% Committed Bytes In Use";
+                ramCounter.NextValue();
+            }
+            catch 
+            {
+                ramCounter.CategoryName = "Pamięć";
+                ramCounter.CounterName = "Dostępna pamięć (MB)";
+                ramCounter.NextValue();
+            }
+
         }
 
         private void InitializeHddCounters()
@@ -73,18 +97,22 @@ namespace WindowsApp
             for (int i = 0; i < drives.Length; i++)
             {
                 PerformanceCounter counter = new PerformanceCounter();
-                counter.CategoryName = "Dysk logiczny";
-                counter.CounterName = "Wolne megabajty";
-                counter.InstanceName = drives[i].Substring(0, 2);
-                
+
                 try
                 {
+                    counter.CategoryName = "LogicalDisk";
+                    counter.CounterName = "% Free Space";
+                    counter.InstanceName = drives[i].Substring(0, 2);
                     counter.NextValue();
                     hddCounters.Add(counter);
                 }
                 catch
                 {
-
+                    counter.CategoryName = "LogicalDisk";
+                    counter.CounterName = "% Free Space";
+                    counter.InstanceName = drives[i].Substring(0, 2);
+                    counter.CategoryName = "Dysk logiczny";
+                    counter.CounterName = "Wolne megabajty";
                 }
             }
         }
@@ -118,7 +146,7 @@ namespace WindowsApp
         public int[] GetHddsMB()
         {
             int[] tab = new int[hddCounters.Count];
-            for(int i = 0; i < hddCounters.Count; i++)
+            for (int i = 0; i < hddCounters.Count; i++)
             {
                 tab[i] = (int)Math.Round(hddCounters[i].NextValue(), 0);
             }
@@ -139,11 +167,53 @@ namespace WindowsApp
 
         private void Timer_Tick(object sender, EventArgs e)
         {
+            this.ConnectToWSDL(sender, e);
+        }
+
+        private void ConnectToWSDL(object sender, EventArgs e)
+        {
+            try
+            {
+                string Komputer_Id = "" + GetComputerID() + "";
+                string Komputer_Nazwa = "" + GetComputerName() + "";
+                string Uzytkownik_Nazwa = "" + GetUserName() + "";
+                int Procesor_Procent = GetCpuPercent();
+                int RAM_MB = GetRamMB();
+                string HDD_MB = "";
+                foreach (int hdd in GetHddsMB())
+                {
+                    HDD_MB += hdd + ";";
+                }
+                HDD_MB += "";
+                string Procesy = "";
+                foreach (string proces in GetProcesses())
+                {
+                    Procesy += proces + ";";
+                }
+
+                Console.WriteLine("Ropozczynam transmisje");
+                ServiceReference1.ComputerPortClient wsdl = new ServiceReference1.ComputerPortClient();
+                string sendData = "{\"id\":\"" + Komputer_Id + "\",\"cpu\":\"" + Procesor_Procent.ToString() + "\",\"computer_name\":\"" + Komputer_Nazwa + "\",\"user_name\":\"" + Uzytkownik_Nazwa + "\",\"ram_mb_used\":\"" + RAM_MB.ToString() + "\",\"hdd_mb_free\":\"" + HDD_MB + "\",\"processes\":\"" + Procesy + "\"}";
+                string data = wsdl.addInformation(sendData);
+                Console.WriteLine("Koniec transmisji");
+
+            }
+            catch
+            {
+                Console.WriteLine("Errors");
+            }
+        }
+
+
+        private void ConnectToDatabase(object sender, EventArgs e)
+        {
             try
             {
                 SqlConnection connection = new SqlConnection("Data Source = SQL5032.SmarterASP.NET; Initial Catalog = DB_A14E76_baza; User Id = DB_A14E76_baza_admin; Password = Injakopr1;");
 
                 connection.Open();
+
+                // test
 
                 string Komputer_Id = "'" + GetComputerID() + "'";
                 string Komputer_Nazwa = "'" + GetComputerName() + "'";
@@ -164,7 +234,7 @@ namespace WindowsApp
                 Procesy += "'";
                 DateTime czas = DateTime.Now;
                 string Czas = "'" + czas.Year + "-" + czas.Month + "-" + czas.Day + " " + czas.Hour + ":" + czas.Minute + ":" + czas.Second + "'";
-                
+
                 string commandString = string.Format("INSERT INTO [Dane] ([Komputer_Id],[Komputer_Nazwa],[Uzytkownik_Nazwa],[Procesor_Procent],[RAM_MB],[HDD_MB],[Procesy],[Czas]) "
                                                     + "VALUES ({0},{1},{2},{3},{4},{5},{6},{7})", Komputer_Id, Komputer_Nazwa, Uzytkownik_Nazwa, Procesor_Procent, RAM_MB, HDD_MB, Procesy, Czas);
 
@@ -175,7 +245,7 @@ namespace WindowsApp
             }
             catch
             {
-
+                
             }
         }
 
